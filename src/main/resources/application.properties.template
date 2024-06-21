@@ -1,0 +1,4 @@
+zeebe.client.cloud.clusterId=
+zeebe.client.cloud.clientId=
+zeebe.client.cloud.clientSecret=
+zeebe.client.cloud.region=bru-2
