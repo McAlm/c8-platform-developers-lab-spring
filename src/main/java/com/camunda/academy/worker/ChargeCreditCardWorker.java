@@ -3,8 +3,11 @@ package com.camunda.academy.worker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.camunda.academy.services.CardExpiredException;
 import com.camunda.academy.services.CreditCardService;
 
+import io.camunda.zeebe.client.api.response.ActivatedJob;
+import io.camunda.zeebe.client.api.worker.JobClient;
 import io.camunda.zeebe.spring.client.annotation.JobWorker;
 import io.camunda.zeebe.spring.client.annotation.Variable;
 import lombok.extern.java.Log;
@@ -26,8 +29,24 @@ public class ChargeCreditCardWorker {
             @Variable String cardNumber, //
             @Variable String cvc, //
             @Variable String expiryDate, //
-            @Variable Double openAmount) {
+            @Variable Double openAmount,
+            JobClient jobClient,
+            ActivatedJob job) {
         log.info("Charging credit card");
-        ccs.chargeAmount(cardNumber, cvc, expiryDate, openAmount);
+
+        try {
+            ccs.chargeAmount(cardNumber, cvc, expiryDate, openAmount);
+        } catch (CardExpiredException e) {
+            jobClient//
+                    .newFailCommand(job)//
+                    .retries(0)
+                    .errorMessage("Could not charge credit card: " + e.getMessage())//
+                    .send()//
+                    .exceptionally((throwable -> {
+                        throw new RuntimeException("Could not send job failure", throwable);
+                    }));
+        }
+
     }
+
 }
