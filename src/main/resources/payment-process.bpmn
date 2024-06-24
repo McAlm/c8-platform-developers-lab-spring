@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="3d11eee" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.5.0" camunda:diagramRelationId="c4a589e5-94c3-4393-b5ad-6a9517224b3c">
   <bpmn:process id="payment-process" name="Payment Process" isExecutable="true">
-    <bpmn:startEvent id="StartEvent_1">
-      <bpmn:outgoing>Flow_0fhqo2i</bpmn:outgoing>
-    </bpmn:startEvent>
     <bpmn:sequenceFlow id="Flow_0fhqo2i" sourceRef="StartEvent_1" targetRef="Activity_09u4ijt" />
     <bpmn:exclusiveGateway id="Gateway_0l4mgvl" name="Credit sufficient?">
       <bpmn:incoming>Flow_0v6ozrv</bpmn:incoming>
@@ -14,9 +11,6 @@
     <bpmn:sequenceFlow id="Flow_19zuyyg" name="No" sourceRef="Gateway_0l4mgvl" targetRef="Activity_0bsn5pm">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=openAmount &gt; 0</bpmn:conditionExpression>
     </bpmn:sequenceFlow>
-    <bpmn:endEvent id="Event_1rxq853" name="Payment done">
-      <bpmn:incoming>Flow_0u1f011</bpmn:incoming>
-    </bpmn:endEvent>
     <bpmn:sequenceFlow id="Flow_0pv6xmg" sourceRef="Activity_1a2lnl9" targetRef="Gateway_1y3pow6" />
     <bpmn:sequenceFlow id="Flow_155zhxk" name="Yes" sourceRef="Gateway_0l4mgvl" targetRef="Gateway_1y3pow6">
       <bpmn:conditionExpression xsi:type="bpmn:tFormalExpression">=openAmount = 0</bpmn:conditionExpression>
@@ -49,36 +43,48 @@
       <bpmn:incoming>Flow_19zuyyg</bpmn:incoming>
       <bpmn:outgoing>Flow_0sffl3d</bpmn:outgoing>
     </bpmn:scriptTask>
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_0fhqo2i</bpmn:outgoing>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1g74i7i" messageRef="Message_15r4nl2" />
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_1rxq853" name="Payment done">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="payment-completion" />
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0u1f011</bpmn:incoming>
+      <bpmn:messageEventDefinition id="MessageEventDefinition_1kgl8ju" />
+    </bpmn:endEvent>
   </bpmn:process>
+  <bpmn:message id="Message_15r4nl2" name="paymentRequestMessage" />
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="payment-process">
-      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
-        <dc:Bounds x="150" y="100" width="36" height="36" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_0l4mgvl_di" bpmnElement="Gateway_0l4mgvl" isMarkerVisible="true">
         <dc:Bounds x="395" y="93" width="50" height="50" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="379" y="69" width="82" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Activity_0xc4bq8_di" bpmnElement="Activity_09u4ijt">
-        <dc:Bounds x="240" y="78" width="100" height="80" />
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1q48oy5_di" bpmnElement="Activity_1a2lnl9">
         <dc:Bounds x="730" y="78" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0xc4bq8_di" bpmnElement="Activity_09u4ijt">
+        <dc:Bounds x="240" y="78" width="100" height="80" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1y3pow6_di" bpmnElement="Gateway_1y3pow6" isMarkerVisible="true">
         <dc:Bounds x="875" y="93" width="50" height="50" />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1rxq853_di" bpmnElement="Event_1rxq853">
-        <dc:Bounds x="972" y="100" width="36" height="36" />
-        <bpmndi:BPMNLabel>
-          <dc:Bounds x="954" y="76" width="71" height="14" />
-        </bpmndi:BPMNLabel>
-      </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0uy8uhj_di" bpmnElement="Activity_0bsn5pm">
         <dc:Bounds x="550" y="78" width="100" height="80" />
         <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0ue6xc3_di" bpmnElement="StartEvent_1">
+        <dc:Bounds x="150" y="100" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_05twe1r_di" bpmnElement="Event_1rxq853">
+        <dc:Bounds x="1012" y="100" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="994" y="76" width="71" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_0fhqo2i_di" bpmnElement="Flow_0fhqo2i">
         <di:waypoint x="186" y="118" />
@@ -110,7 +116,7 @@
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0u1f011_di" bpmnElement="Flow_0u1f011">
         <di:waypoint x="925" y="118" />
-        <di:waypoint x="972" y="118" />
+        <di:waypoint x="1012" y="118" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_0sffl3d_di" bpmnElement="Flow_0sffl3d">
         <di:waypoint x="650" y="118" />
