@@ -37,16 +37,9 @@ public class ChargeCreditCardWorker {
         try {
             ccs.chargeAmount(cardNumber, cvc, expiryDate, openAmount);
         } catch (CardExpiredException e) {
-            jobClient//
-                    .newFailCommand(job)//
-                    .retries(0)
-                    .errorMessage("Could not charge credit card: " + e.getMessage())//
-                    .send()//
-                    .exceptionally((throwable -> {
-                        throw new RuntimeException("Could not send job failure", throwable);
-                    }));
+            jobClient.newThrowErrorCommand(job).errorCode("creditCardChargeError")
+                    .errorMessage("Payment failed, Credit Card has expired!").send().join();
         }
-
     }
 
 }
