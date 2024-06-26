@@ -20,7 +20,7 @@ public class PaymentInvocationWorker {
     private ZeebeClient zeebe;
 
     @JobWorker(type = "payment-invocation")
-    public void invokePayment(
+    public Map<String, Object> invokePayment(
             @Variable String customerId, //
             @Variable Double orderTotal, //
             @Variable String cardNumber, //
@@ -39,5 +39,7 @@ public class PaymentInvocationWorker {
                         , "cvc", cvc//
                         , "expiryDate", expiryDate))
                 .send().join();
+
+                return Map.of("orderId", orderId);
     }
 }
