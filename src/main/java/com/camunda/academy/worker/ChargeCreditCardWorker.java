@@ -40,7 +40,7 @@ public class ChargeCreditCardWorker {
 
         try {
             ccs.chargeAmount(cardNumber, cvc, expiryDate, openAmount);
-            jobClient.newCompleteCommand(job);
+            jobClient.newCompleteCommand(job).send().join();
         } catch (CardExpiredException e) {
             String errorMessage ="Payment failed, Credit Card has expired!";
             throw new ZeebeBpmnError("creditCardChargeError"//
