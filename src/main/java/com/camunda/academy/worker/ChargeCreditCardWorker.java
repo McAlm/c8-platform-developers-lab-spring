@@ -27,8 +27,8 @@ public class ChargeCreditCardWorker {
                     "cardNumber", //
                     "cvc", //
                     "expiryDate", //
-                    "openAmount" }//
-                    , autoComplete = false)
+                    "openAmount" }, //
+                    autoComplete = false)
     public void chargeAmount(//
             @Variable String cardNumber, //
             @Variable String cvc, //
@@ -45,7 +45,7 @@ public class ChargeCreditCardWorker {
             String errorMessage ="Payment failed, Credit Card has expired!";
             throw new ZeebeBpmnError("creditCardChargeError"//
                                     , errorMessage//
-                                    , Map.of("errorMessage",errorMessage));
+                                    , Map.of("errorMessage", errorMessage));
         }
     }
 }
