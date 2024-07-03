@@ -27,7 +27,8 @@ public class ChargeCreditCardWorker {
                     "cardNumber", //
                     "cvc", //
                     "expiryDate", //
-                    "openAmount" })
+                    "openAmount" }//
+                    , autoComplete = false)
     public void chargeAmount(//
             @Variable String cardNumber, //
             @Variable String cvc, //
@@ -39,11 +40,12 @@ public class ChargeCreditCardWorker {
 
         try {
             ccs.chargeAmount(cardNumber, cvc, expiryDate, openAmount);
+            jobClient.newCompleteCommand(job);
         } catch (CardExpiredException e) {
             String errorMessage ="Payment failed, Credit Card has expired!";
-            throw new ZeebeBpmnError("creditCardChargeError", errorMessage, Map.of("errorMessage",errorMessage));
-            // jobClient.newThrowErrorCommand(job).errorCode("creditCardChargeError")
-            //         .errorMessage(errorMessage).variable("errorMessage",errorMessage).send().join();
+            throw new ZeebeBpmnError("creditCardChargeError"//
+                                    , errorMessage//
+                                    , Map.of("errorMessage",errorMessage));
         }
     }
 }
